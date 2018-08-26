@@ -361,7 +361,11 @@ public class Board {
 
 		
 	}
-	
+	/**
+	 * begins player turn rolls dice and resets fields to clear gui
+	 * 
+	 * @param p
+	 */	
 	public static void startTurn(Player p) {
 		suggestionPhase=false;
 		p.moves=dice.roll();
@@ -426,7 +430,11 @@ public class Board {
 	public void setTiles(Tile[][] tiles) {
 		this.tiles = tiles;
 	}
-
+	/**
+	 * Begins suggestion phase and allows player to select cards for suggestion
+	 * TODO still need to find a way to take selected cards and create suggestion which will lead to refutation
+	 * @param currentTurn
+	 */
 	public static void suggest(Player currentTurn) {
 		if(Board.roomFromPos(currentTurn.xpos,currentTurn.ypos) instanceof RoomCard) {
 		List<Card> suggestable = new ArrayList<>(); 
@@ -457,6 +465,11 @@ public class Board {
 			}
 		}
 		
+	}
+
+	public static WeaponCard getWeaponCard() {
+		// TODO Auto-generated method stub
+		return selectedWeapon;
 	}
 
 }
