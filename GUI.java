@@ -117,6 +117,7 @@ public class GUI {
 			public void actionPerformed(ActionEvent ev) {
 				Board.suggest(currentTurn);
 				redraw();
+
 			}
 		});
 		
@@ -208,6 +209,18 @@ public class GUI {
 			public void mouseReleased(MouseEvent e) {
 				Board.onClick(e,currentTurn);
 				redraw();
+				if(Board.getSelectedWeapon()!=null && Board.getSelectedCharacter()!=null) {
+				    final JFrame confirm = new JFrame();	        
+			        int result = JOptionPane.showConfirmDialog(confirm, "Would you like to suggest these cards?");			        
+			        if (result==JOptionPane.YES_OPTION) {
+			        	Board.submitSuggest(currentTurn);
+			        }else if(result==JOptionPane.CANCEL_OPTION) {
+			        	Board.suggestionPhase=false;
+			        	Board.setSelectedCharacter(null);
+			        	Board.setSelectedWeapon(null);
+			        	redraw();
+			        }
+				}
 			}
 		});
 		drawing.setPreferredSize(new Dimension(DEFAULT_DRAWING_WIDTH,

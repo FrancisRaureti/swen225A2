@@ -82,7 +82,7 @@ public class Board {
 					}
 
 				
-				if(c==selectedWeapon || c==selectedCharacter) {
+				if(c==getSelectedWeapon() || c==getSelectedCharacter()) {
 					Stroke oldstroke = g2.getStroke();
 					g2.setStroke(new BasicStroke(2));					
 					c.drawOutline(g2, screen);
@@ -338,7 +338,7 @@ public class Board {
 	 * @param mover
 	 * @param moved
 	 */
-	public void movePlayerTo(Player mover, Player moved) {
+	public static void movePlayerTo(Player mover, Player moved) {
 		Tile adj = null;
 		Tile target = null;
 		for (int rows = 0 ; rows<getTiles().length ; rows++) {
@@ -456,10 +456,10 @@ public class Board {
 				if(c.xpos-c.size/2<e.getX() && c.xpos+c.size/2>e.getX() 
 						&& c.ypos-c.size/2<e.getY() && c.ypos+c.size*(3/2)>e.getY()) {
 					if(c instanceof WeaponCard) {
-						selectedWeapon=(WeaponCard) c;
+						setSelectedWeapon((WeaponCard) c);
 					}
 					else if(c instanceof CharacterCard) {
-						selectedCharacter = (CharacterCard)c;
+						setSelectedCharacter((CharacterCard)c);
 					}
 				}
 			}
@@ -467,9 +467,32 @@ public class Board {
 		
 	}
 
-	public static WeaponCard getWeaponCard() {
+
+
+	public static CharacterCard getSelectedCharacter() {
 		// TODO Auto-generated method stub
+		return selectedCharacter;
+	}
+
+	public static void setSelectedCharacter(CharacterCard selectedCharacter) {
+		Board.selectedCharacter = selectedCharacter;
+	}
+
+	public static WeaponCard getSelectedWeapon() {
 		return selectedWeapon;
+	}
+
+	public static void setSelectedWeapon(WeaponCard selectedWeapon) {
+		Board.selectedWeapon = selectedWeapon;
+	}
+
+	public static void submitSuggest(Player currentTurn) {
+		for(Player suggested : players) {
+			if (suggested.name.equals(selectedCharacter.getName())) {
+				movePlayerTo(currentTurn, suggested);
+			}
+		}
+		
 	}
 
 }
