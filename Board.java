@@ -497,10 +497,6 @@ public class Board {
 
 
 	public static CharacterCard getSelectedCharacter() {
-<<<<<<< HEAD
-=======
-		// TODO Auto-generated method stub
->>>>>>> 779f76dff38e546a4433c7ff211e5063992debbc
 		return selectedCharacter;
 	}
 
@@ -517,21 +513,17 @@ public class Board {
 	}
 
 	public static void submitSuggest(Player currentTurn) {
-<<<<<<< HEAD
-		
-=======
->>>>>>> 779f76dff38e546a4433c7ff211e5063992debbc
+
 		for(Player suggested : players) {
 			if (suggested.name.equals(selectedCharacter.getName())) {
 				movePlayerTo(currentTurn, suggested);
 			}
 		}
-<<<<<<< HEAD
+
 		suggestionPhase=false;
 		refutationPhase = true;
 		suggestion = new Suggestion((RoomCard)Board.roomFromPos(currentTurn.xpos,currentTurn.ypos),selectedCharacter,selectedWeapon);
-=======
->>>>>>> 779f76dff38e546a4433c7ff211e5063992debbc
+
 		
 	}
 
