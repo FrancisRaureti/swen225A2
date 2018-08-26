@@ -216,16 +216,30 @@ public class GUI {
 			public void mouseReleased(MouseEvent e) {
 				Board.onClick(e,currentTurn);
 				redraw();
+<<<<<<< HEAD
 
 				//in the sugestion phase when the player has selected cards
 
+=======
+<<<<<<< HEAD
+				//in the sugestion phase when the player has selected cards
+=======
+>>>>>>> 779f76dff38e546a4433c7ff211e5063992debbc
+>>>>>>> 6b843f46aa67f7f2145a984619622689268edb11
 				if(Board.getSelectedWeapon()!=null && Board.getSelectedCharacter()!=null) {
 				    final JFrame confirm = new JFrame();	        
 			        int result = JOptionPane.showConfirmDialog(confirm, "Would you like to suggest these cards?");			        
 			        if (result==JOptionPane.YES_OPTION) {
 			        	Board.submitSuggest(currentTurn);
+<<<<<<< HEAD
 
 			        	redraw();
+=======
+<<<<<<< HEAD
+			        	redraw();
+=======
+>>>>>>> 779f76dff38e546a4433c7ff211e5063992debbc
+>>>>>>> 6b843f46aa67f7f2145a984619622689268edb11
 			        }else if(result==JOptionPane.CANCEL_OPTION) {
 			        	Board.suggestionPhase=false;
 			        	Board.setSelectedCharacter(null);
