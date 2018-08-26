@@ -28,7 +28,14 @@ import javax.swing.text.DefaultCaret;
 
 
 //import code.GUI.Move;
-
+/**
+ * this class has aspects of the GUI class from the COMP261 assignment
+ * but has been retrofitted to suit the swen225 assignment 2
+ * there is lots of code that will imitate the code from the 221 assignment
+ * as it was used as a reference for drawing up a good GUI
+ * @author Raure
+ *
+ */
 public class GUI {
 	private JFrame frame;
 	private static final int DEFAULT_DRAWING_HEIGHT = 840;
@@ -117,6 +124,7 @@ public class GUI {
 			public void actionPerformed(ActionEvent ev) {
 				Board.suggest(currentTurn);
 				redraw();
+
 			}
 		});
 		
@@ -208,6 +216,20 @@ public class GUI {
 			public void mouseReleased(MouseEvent e) {
 				Board.onClick(e,currentTurn);
 				redraw();
+				//in the sugestion phase when the player has selected cards
+				if(Board.getSelectedWeapon()!=null && Board.getSelectedCharacter()!=null) {
+				    final JFrame confirm = new JFrame();	        
+			        int result = JOptionPane.showConfirmDialog(confirm, "Would you like to suggest these cards?");			        
+			        if (result==JOptionPane.YES_OPTION) {
+			        	Board.submitSuggest(currentTurn);
+			        	redraw();
+			        }else if(result==JOptionPane.CANCEL_OPTION) {
+			        	Board.suggestionPhase=false;
+			        	Board.setSelectedCharacter(null);
+			        	Board.setSelectedWeapon(null);
+			        	redraw();
+			        }
+				}
 			}
 		});
 		drawing.setPreferredSize(new Dimension(DEFAULT_DRAWING_WIDTH,
@@ -304,6 +326,12 @@ public class GUI {
 		return players.get(i);
 	}
 	
+	public static void Refutation(Player player, Suggestion s) {
+		if(player==currentTurn) {}
+		if(player.canRefute(s)) {
+			Board.refutee = player;
+		}
+	}
 
 	
 	/**

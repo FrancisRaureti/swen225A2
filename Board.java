@@ -25,13 +25,14 @@ public class Board {
 	private static List<Card> weapons;
 	private static List<Card> roomCards;
 	private static List<Card> characterCards;
-	private static List<Card> suggested;
 	private static Solution solution;
-	
+	public static Suggestion suggestion;
 	private static WeaponCard selectedWeapon;
 	private static CharacterCard selectedCharacter;
 	
 	static boolean suggestionPhase;
+	static boolean refutationPhase;
+	public static Player refutee;
 	
 	public void draw(Graphics g, Dimension screen,Player currentTurn) {		
 		Graphics2D g2 = (Graphics2D) g;
@@ -67,6 +68,7 @@ public class Board {
 		int ypos = 50;
 		int wcount =0;
 		int ccount = 0;
+		int rcount = 0;
 		if(suggestionPhase) {
 			for (Card c : currentTurn.suggestable) {
 				if(c instanceof WeaponCard) {
@@ -82,13 +84,34 @@ public class Board {
 					}
 
 				
-				if(c==selectedWeapon || c==selectedCharacter) {
+				if(c==getSelectedWeapon() || c==getSelectedCharacter()) {
 					Stroke oldstroke = g2.getStroke();
 					g2.setStroke(new BasicStroke(2));					
 					c.drawOutline(g2, screen);
 					g2.setStroke(oldstroke);
 				}
 				
+			}
+		}
+		if(refutationPhase) {
+			for (Card c : refutee.hand) {
+				if(c.isRefutable(suggestion))
+				if(c instanceof WeaponCard) {
+						ypos=50;
+						g2.setColor(weaponcolor);
+						c.draw(g2, screen, xpos + wcount*80, ypos);
+						wcount++;
+					}else if(c instanceof CharacterCard) {
+						ypos=180; 
+						g2.setColor(Charactercolor);
+						c.draw(g2, screen, xpos + ccount*80, ypos);
+						ccount++;
+					}else if(c instanceof RoomCard) {
+						ypos = 310;
+						g2.setColor(roomcolor);
+						c.draw(g2, screen, xpos + rcount*80, ypos);
+						rcount++;
+					}
 			}
 		}
 		
@@ -100,7 +123,7 @@ public class Board {
 	 */
 	public Board(List<Player> players) {
 		this.players=players;
-		this.suggested = new ArrayList<>();
+		
 		this.cards = new ArrayList<>();
 		this.setTiles(new Tile[25][24]);
 		
@@ -108,6 +131,7 @@ public class Board {
 		weapons = new ArrayList<>();
 		characterCards = new ArrayList<>();
 		suggestionPhase=false;
+		refutationPhase=false;
 		
 		fillBoard();
 		
@@ -338,7 +362,7 @@ public class Board {
 	 * @param mover
 	 * @param moved
 	 */
-	public void movePlayerTo(Player mover, Player moved) {
+	public static void movePlayerTo(Player mover, Player moved) {
 		Tile adj = null;
 		Tile target = null;
 		for (int rows = 0 ; rows<getTiles().length ; rows++) {
@@ -421,9 +445,7 @@ public class Board {
 		return this.cards;
 	}
 
-	public List<Card> getSuggested() {
-		return suggested;
-	}
+
 	public static Tile[][] getTiles() {
 		return tiles;
 	}
@@ -432,7 +454,6 @@ public class Board {
 	}
 	/**
 	 * Begins suggestion phase and allows player to select cards for suggestion
-	 * TODO still need to find a way to take selected cards and create suggestion which will lead to refutation
 	 * @param currentTurn
 	 */
 	public static void suggest(Player currentTurn) {
@@ -444,22 +465,28 @@ public class Board {
 			}
 		}
 		RoomCard  room = (RoomCard)Board.roomFromPos(currentTurn.xpos,currentTurn.ypos);
-		suggested.add(room);
 		currentTurn.suggestable = suggestable;
 		suggestionPhase = true;
 		}
 	}
-
+	
+	
+	/**
+	 * Mouse event triggers during suggestion and refutation phases
+	 * for choosing cards to refutes / suggest with
+	 * @param e
+	 * @param currentTurn
+	 */
 	public static void onClick(MouseEvent e, Player currentTurn) {
 		if(suggestionPhase) {
 			for(Card c : currentTurn.suggestable) {
 				if(c.xpos-c.size/2<e.getX() && c.xpos+c.size/2>e.getX() 
 						&& c.ypos-c.size/2<e.getY() && c.ypos+c.size*(3/2)>e.getY()) {
 					if(c instanceof WeaponCard) {
-						selectedWeapon=(WeaponCard) c;
+						setSelectedWeapon((WeaponCard) c);
 					}
 					else if(c instanceof CharacterCard) {
-						selectedCharacter = (CharacterCard)c;
+						setSelectedCharacter((CharacterCard)c);
 					}
 				}
 			}
@@ -467,9 +494,35 @@ public class Board {
 		
 	}
 
-	public static WeaponCard getWeaponCard() {
-		// TODO Auto-generated method stub
+
+
+	public static CharacterCard getSelectedCharacter() {
+		return selectedCharacter;
+	}
+
+	public static void setSelectedCharacter(CharacterCard selectedCharacter) {
+		Board.selectedCharacter = selectedCharacter;
+	}
+
+	public static WeaponCard getSelectedWeapon() {
 		return selectedWeapon;
+	}
+
+	public static void setSelectedWeapon(WeaponCard selectedWeapon) {
+		Board.selectedWeapon = selectedWeapon;
+	}
+
+	public static void submitSuggest(Player currentTurn) {
+		
+		for(Player suggested : players) {
+			if (suggested.name.equals(selectedCharacter.getName())) {
+				movePlayerTo(currentTurn, suggested);
+			}
+		}
+		suggestionPhase=false;
+		refutationPhase = true;
+		suggestion = new Suggestion((RoomCard)Board.roomFromPos(currentTurn.xpos,currentTurn.ypos),selectedCharacter,selectedWeapon);
+		
 	}
 
 }
