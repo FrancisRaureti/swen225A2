@@ -592,6 +592,9 @@ public class Board {
 		selectedRoom = null;
 		selectedCharacter = null;
 		refutee = nextRefutee(refutee);
+		if (refutee==currentTurn) {
+			startTurn(GUI.nextPlayer(currentTurn));
+		}
 		
 		
 		
@@ -606,7 +609,7 @@ public class Board {
 			if(temp==GUI.getCurrentTurn()) {
 				return temp;
 			}
-			temp = GUI.nextPlayer(player);
+			temp = GUI.nextPlayer(temp);
 		}
 		return temp;
 		
