@@ -218,22 +218,35 @@ public class GUI {
 				redraw();
 
 				//in the sugestion phase when the player has selected cards
+				if(Board.suggestionPhase) {
+					if(Board.getSelectedWeapon()!=null && Board.getSelectedCharacter()!=null) {
+						final JFrame confirm = new JFrame();	        
+						int result = JOptionPane.showConfirmDialog(confirm, "Would you like to suggest these cards?");			        
+						if (result==JOptionPane.YES_OPTION) {
+							//submits cards for suggestion and begins the refutation phase
+							Board.submitSuggest(currentTurn);
+							redraw();
 
+						}else if(result==JOptionPane.CANCEL_OPTION) {
+							// quits out of suggestion phase back to move phase
+							Board.suggestionPhase=false;
+							Board.setSelectedCharacter(null);
+							Board.setSelectedWeapon(null);
+							redraw();
+						}
+					}
+				}
+				
+				if(Board.refutationPhase) {
+					if(Board.getSelectedWeapon()!=null || Board.getSelectedCharacter()!=null || Board.getSelectedRoom()!=null) {
+						final JFrame confirm = new JFrame();	        
+						int result = JOptionPane.showConfirmDialog(confirm, "Is this the card you wish to refute with?");			        
+						if (result==JOptionPane.YES_OPTION) {
+							//submits cards for suggestion and begins the refutation phase
+							Board.submitSuggest(currentTurn);
+							redraw();
 
-				if(Board.getSelectedWeapon()!=null && Board.getSelectedCharacter()!=null) {
-				    final JFrame confirm = new JFrame();	        
-			        int result = JOptionPane.showConfirmDialog(confirm, "Would you like to suggest these cards?");			        
-			        if (result==JOptionPane.YES_OPTION) {
-			        	Board.submitSuggest(currentTurn);
-
-			        	redraw();
-
-			        }else if(result==JOptionPane.CANCEL_OPTION) {
-			        	Board.suggestionPhase=false;
-			        	Board.setSelectedCharacter(null);
-			        	Board.setSelectedWeapon(null);
-			        	redraw();
-			        }
+					}
 				}
 			}
 		});

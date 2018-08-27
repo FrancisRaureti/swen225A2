@@ -29,6 +29,7 @@ public class Board {
 	public static Suggestion suggestion;
 	private static WeaponCard selectedWeapon;
 	private static CharacterCard selectedCharacter;
+	private static RoomCard selectedRoom;
 	
 	static boolean suggestionPhase;
 	static boolean refutationPhase;
@@ -55,6 +56,7 @@ public class Board {
 			p.draw(g2, screen);
 		}
 		int xpos =50;
+		if(!refutationPhase)
 		for(Card c : currentTurn.hand) {
 			if(c instanceof WeaponCard)g2.setColor(weaponcolor);
 			if(c instanceof CharacterCard)g2.setColor(Charactercolor);
@@ -95,8 +97,8 @@ public class Board {
 		}
 		if(refutationPhase) {
 			for (Card c : refutee.hand) {
-				if(c.isRefutable(suggestion))
-				if(c instanceof WeaponCard) {
+				if(c.isRefutable(suggestion)) {
+					if(c instanceof WeaponCard) {
 						ypos=50;
 						g2.setColor(weaponcolor);
 						c.draw(g2, screen, xpos + wcount*80, ypos);
@@ -112,6 +114,7 @@ public class Board {
 						c.draw(g2, screen, xpos + rcount*80, ypos);
 						rcount++;
 					}
+				}
 			}
 		}
 		
@@ -490,11 +493,44 @@ public class Board {
 					}
 				}
 			}
+		}else if(refutationPhase) {
+			if (refutee==currentTurn) {}
+			else if(refutee.canRefute(suggestion)) {
+				for(Card c : refutee.hand) {
+					if(c.isRefutable(suggestion)) {
+						if(c.xpos-c.size/2<e.getX() && c.xpos+c.size/2>e.getX() 
+								&& c.ypos-c.size/2<e.getY() && c.ypos+c.size*(3/2)>e.getY()) {
+							if(c instanceof WeaponCard) {
+								setSelectedWeapon((WeaponCard) c);							}
+							else if(c instanceof CharacterCard) {
+								setSelectedCharacter((CharacterCard)c);
+							}else if(c instanceof RoomCard) {
+								setSelectedRoom((RoomCard)c);
+								}
+							}
+					}
+				}
+			}
 		}
+		
 		
 	}
 
 
+
+	public static void setSelectedRoom(RoomCard c) {
+		if(refutationPhase) {
+			selectedWeapon = null;
+			selectedCharacter = null;
+		}
+		selectedRoom=c;
+
+	}
+	
+
+	public static RoomCard getSelectedRoom() {
+		return selectedRoom;
+	}
 
 	public static CharacterCard getSelectedCharacter() {
 		return selectedCharacter;
@@ -502,6 +538,10 @@ public class Board {
 
 	public static void setSelectedCharacter(CharacterCard selectedCharacter) {
 		Board.selectedCharacter = selectedCharacter;
+		if(refutationPhase) {
+			selectedRoom=null;
+			selectedWeapon = null;
+		}
 	}
 
 	public static WeaponCard getSelectedWeapon() {
@@ -510,8 +550,17 @@ public class Board {
 
 	public static void setSelectedWeapon(WeaponCard selectedWeapon) {
 		Board.selectedWeapon = selectedWeapon;
+		if(refutationPhase) {
+			selectedRoom = (null);
+			selectedCharacter = (null);			
+		}
 	}
-
+	/**
+	 * moves player being suggested
+	 * begins refutation phase
+	 * sele 
+	 * @param currentTurn
+	 */
 	public static void submitSuggest(Player currentTurn) {
 
 		for(Player suggested : players) {
@@ -519,11 +568,29 @@ public class Board {
 				movePlayerTo(currentTurn, suggested);
 			}
 		}
-
-
 		suggestionPhase=false;
 		refutationPhase = true;
 		suggestion = new Suggestion((RoomCard)Board.roomFromPos(currentTurn.xpos,currentTurn.ypos),selectedCharacter,selectedWeapon);
+		refutee = GUI.nextPlayer(currentTurn);
+		setSelectedWeapon(null);
+		setSelectedCharacter(null);
 	}
+	
+	public static void submitRefute(Player currentTurn) {
+		Card refute = null;
+		if(selectedCharacter!=null) {
+			refute = selectedCharacter;
+		}else if(selectedRoom!=null) {
+			refute = selectedRoom;
+		}else if(selectedWeapon!=null){
+			refute = selectedWeapon;
+		}
+		currentTurn.refuted.add(refute);
+		
+		
+	}
+	
+
+	
 
 }
