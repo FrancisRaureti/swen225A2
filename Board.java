@@ -469,7 +469,6 @@ public class Board {
 				suggestable.add(c);
 			}
 		}
-		RoomCard  room = (RoomCard)Board.roomFromPos(currentTurn.xpos,currentTurn.ypos);
 		currentTurn.suggestable = suggestable;
 		suggestionPhase = true;
 		}
@@ -593,6 +592,7 @@ public class Board {
 		selectedCharacter = null;
 		refutee = nextRefutee(refutee);
 		if (refutee==currentTurn) {
+			GUI.setCurrentTurn(GUI.nextPlayer(currentTurn));
 			startTurn(GUI.nextPlayer(currentTurn));
 		}
 		
