@@ -9,17 +9,22 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -49,53 +54,74 @@ public class GUI {
 	private static Boolean gameOver = false;
 	private static Player currentTurn;
 	private static Board board;
-	
-	
+	//Initialise an array list with all of the characters in it
+	private final ArrayList<String> unchosenCharacters = new ArrayList<String>(Arrays.asList("Miss Scarlet","Col. Mustard","Mrs White","Mr Green","Mrs Peacock","Prof. Plum"));
+
+
 	public GUI() {
+
 		initialise();
 
-		
+
 	}
-	
 
 
 
-	private void getNumPlayers() {
+
+	private int getNumPlayers() {
 		players = new ArrayList<Player>();
 		Object[] possibilities = {"3","4","5","6"};
 		String input = (String)JOptionPane.showInputDialog(frame,"How many players would like to participate?","New Game",
 				JOptionPane.PLAIN_MESSAGE,null,possibilities,"3");
-		int numplayers =0;
+		int numPlayers =0;
 		try {
-			numplayers = Integer.parseInt(input);
+			numPlayers = Integer.parseInt(input);
 		}catch(NumberFormatException e) {
 			System.out.println("input not recognized please try again");
 		}
+		return numPlayers;
+	}
+	
+	
+	public void selectCharacter() {
+		int numPlayers = getNumPlayers();
 
-		gameOn=true;
-		for (int i = 0 ; i < numplayers ; i++) {
-			Player p =new Player(CharacterCard.Name.values()[i]);
-			players.add(p);
+		for(int i = 0; i<numPlayers;i++) {
+		JFrame radioFrame = new JFrame("Character Select");
+		radioFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		SingleSelectButton radioButton = new SingleSelectButton();
+		radioButton.setOpaque(true);
+		
+		String character = radioButton.selectCharacter(this.unchosenCharacters);
+		radioFrame.pack();
+		radioFrame.setVisible(true);
 		}
-		setCurrentTurn(players.get(0));
+
+		//								Player player = new Player(CharacterCard.Name.values()[i]);
+		//								players.add(player);
+		this.gameOn = true;
 		redraw();
 		board = new Board(players);
 		board.deal();
 		Board.startTurn(getCurrentTurn());
 	}
-	
+
+
+
+
 	public void redraw() {
 		frame.repaint();
 	}
-	
+
 	public Dimension getDrawingAreaDimension() {
 		return drawing.getSize();
 	}
-	
+
 	public JTextArea getTextOutputArea() {
 		return textOutputArea;
 	}
-	
+
 	private void initialise() {
 		JButton quit = new JButton("Quit");
 		quit.addActionListener(new ActionListener() {
@@ -106,11 +132,11 @@ public class GUI {
 		JButton newgame = new JButton("New Game");
 		newgame.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ev) {
-				getNumPlayers();
+				selectCharacter();
 				redraw();
 			}
 		});
-		
+
 		JButton endTurn = new JButton("End Turn");
 		endTurn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
@@ -127,7 +153,7 @@ public class GUI {
 
 			}
 		});
-		
+
 		JButton west = new JButton("\u2190");
 		west.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
@@ -160,16 +186,16 @@ public class GUI {
 			}
 		});
 
-		
-		
-		
+
+
+
 		JPanel panel = new JPanel();
-		
+
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 
 		Border edge = BorderFactory.createEmptyBorder(5, 5, 5, 5);
 		panel.setBorder(edge);
-		
+
 		JPanel newquit = new JPanel();
 		newquit.setLayout(new GridLayout(2, 1));
 		// manually set a fixed size for the panel containing the load and quit
@@ -179,7 +205,7 @@ public class GUI {
 		newquit.add(newgame);
 		panel.add(newquit);
 		panel.add(Box.createRigidArea(new Dimension(15, 0)));
-	
+
 		JPanel navigation = new JPanel();
 		navigation.setMaximumSize(new Dimension(150, 60));
 		navigation.setLayout(new GridLayout(2, 3));
@@ -191,7 +217,7 @@ public class GUI {
 		panel.add(Box.createRigidArea(new Dimension(5, 0)));
 		// glue is another invisible component that grows to take up all the
 		// space it can on resize.
-		
+
 		JPanel phases = new JPanel();
 		phases.setMaximumSize(new Dimension(300,60));
 		phases.setLayout(new GridLayout(1,3));
@@ -200,18 +226,18 @@ public class GUI {
 		phases.add(Suggest);
 		panel.add(phases);
 		panel.add(Box.createRigidArea(new Dimension(5, 0)));
-		
+
 
 		// this prevents a bug where the component won't be
 		// drawn until it is resized.
 		panel.setVisible(true);
-		
+
 		drawing = new JComponent() {
 			protected void paintComponent(Graphics g) {
 				redraw(g);
 			}
 		};
-		
+
 		drawing.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
 				Board.onClick(e,getCurrentTurn());
@@ -256,7 +282,7 @@ public class GUI {
 		// this prevents a bug where the component won't be
 		// drawn until it is resized.
 		drawing.setVisible(true);
-		
+
 		textOutputArea = new JTextArea(TEXT_OUTPUT_ROWS, 0);
 		textOutputArea.setLineWrap(true);
 		textOutputArea.setWrapStyleWord(true); // pretty line wrap.
@@ -266,7 +292,7 @@ public class GUI {
 		// text is appended to the JTextArea.
 		DefaultCaret caret = (DefaultCaret) textOutputArea.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-		
+
 		JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		split.setDividerSize(5); // make the selectable area smaller
 		split.setContinuousLayout(true); // make the panes resize nicely
@@ -277,7 +303,7 @@ public class GUI {
 		split.setTopComponent(drawing);
 		split.setBottomComponent(scroll);
 
-		
+
 		frame = new JFrame("Clue");
 		// this makes the program actually quit when the frame's close button is
 		// pressed.
@@ -293,10 +319,9 @@ public class GUI {
 
 	protected void redraw(Graphics g) {
 		if(gameOn) {
-		board.draw(g, getDrawingAreaDimension(),getCurrentTurn());
+			board.draw(g, getDrawingAreaDimension(),getCurrentTurn());
 		}		
 	}
-	
 	private static void accuse(Player p, Scanner sc) {
 		List<Card> accusable = new ArrayList<>(); 
 		for(Card c : board.getCards()) {
@@ -330,7 +355,8 @@ public class GUI {
 			gameOver=true;
 		}
 	}
-	
+
+
 	/**
 	 * returns next player in line for turn
 	 * @param p
@@ -344,7 +370,7 @@ public class GUI {
 		}
 		return players.get(i);
 	}
-	
+
 	public static void Refutation(Player player, Suggestion s) {
 		if(player==getCurrentTurn()) {}
 		if(player.canRefute(s)) {
@@ -352,7 +378,7 @@ public class GUI {
 		}
 	}
 
-	
+
 	/**
 	 * method that game runs from
 	 * ends when game is over
@@ -375,6 +401,6 @@ public class GUI {
 	public static void setCurrentTurn(Player currentTurn) {
 		GUI.currentTurn = currentTurn;
 	}
-	
+
 
 }

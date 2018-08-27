@@ -184,7 +184,7 @@ public class Board {
 		
 		this.setSolution(new Solution(murderWeapon,murderer,murderRoom));
 		
-		System.out.println(random);
+		System.out.println("\nRandom Number is: " + random);
 		while(!deck.isEmpty()) {
 			for(Player p : players) {
 				random = (int)(Math.random()*deck.size());
