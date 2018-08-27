@@ -77,11 +77,11 @@ public class GUI {
 			Player p =new Player(CharacterCard.Name.values()[i]);
 			players.add(p);
 		}
-		currentTurn = players.get(0);
+		setCurrentTurn(players.get(0));
 		redraw();
 		board = new Board(players);
 		board.deal();
-		Board.startTurn(currentTurn);
+		Board.startTurn(getCurrentTurn());
 	}
 	
 	public void redraw() {
@@ -114,15 +114,15 @@ public class GUI {
 		JButton endTurn = new JButton("End Turn");
 		endTurn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				currentTurn=nextPlayer(currentTurn);
-				Board.startTurn(currentTurn);
+				setCurrentTurn(nextPlayer(getCurrentTurn()));
+				Board.startTurn(getCurrentTurn());
 				redraw();
 			}
 		});
 		JButton Suggest = new JButton("Suggest");
 		Suggest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				Board.suggest(currentTurn);
+				Board.suggest(getCurrentTurn());
 				redraw();
 
 			}
@@ -131,7 +131,7 @@ public class GUI {
 		JButton west = new JButton("\u2190");
 		west.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				Board.move(currentTurn, Tile.Direction.WEST);
+				Board.move(getCurrentTurn(), Tile.Direction.WEST);
 				redraw();
 			}
 		});
@@ -139,7 +139,7 @@ public class GUI {
 		JButton east = new JButton("\u2192");
 		east.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				Board.move(currentTurn, Tile.Direction.EAST);
+				Board.move(getCurrentTurn(), Tile.Direction.EAST);
 				redraw();
 			}
 		});
@@ -147,7 +147,7 @@ public class GUI {
 		JButton north = new JButton("\u2191");
 		north.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				Board.move(currentTurn, Tile.Direction.NORTH);
+				Board.move(getCurrentTurn(), Tile.Direction.NORTH);
 				redraw();
 			}
 		});
@@ -155,7 +155,7 @@ public class GUI {
 		JButton south = new JButton("\u2193");
 		south.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				Board.move(currentTurn, Tile.Direction.SOUTH);
+				Board.move(getCurrentTurn(), Tile.Direction.SOUTH);
 				redraw();
 			}
 		});
@@ -214,7 +214,7 @@ public class GUI {
 		
 		drawing.addMouseListener(new MouseAdapter() {
 			public void mouseReleased(MouseEvent e) {
-				Board.onClick(e,currentTurn);
+				Board.onClick(e,getCurrentTurn());
 				redraw();
 
 				//in the sugestion phase when the player has selected cards
@@ -224,7 +224,7 @@ public class GUI {
 						int result = JOptionPane.showConfirmDialog(confirm, "Would you like to suggest these cards?");			        
 						if (result==JOptionPane.YES_OPTION) {
 							//submits cards for suggestion and begins the refutation phase
-							Board.submitSuggest(currentTurn);
+							Board.submitSuggest(getCurrentTurn());
 							redraw();
 
 						}else if(result==JOptionPane.CANCEL_OPTION) {
@@ -236,16 +236,17 @@ public class GUI {
 						}
 					}
 				}
-				
+
 				if(Board.refutationPhase) {
 					if(Board.getSelectedWeapon()!=null || Board.getSelectedCharacter()!=null || Board.getSelectedRoom()!=null) {
 						final JFrame confirm = new JFrame();	        
 						int result = JOptionPane.showConfirmDialog(confirm, "Is this the card you wish to refute with?");			        
 						if (result==JOptionPane.YES_OPTION) {
 							//submits cards for suggestion and begins the refutation phase
-							Board.submitSuggest(currentTurn);
+							//TODO problem somewhere in this method 
+							Board.submitRefute(getCurrentTurn());							
 							redraw();
-
+						}
 					}
 				}
 			}
@@ -292,10 +293,10 @@ public class GUI {
 
 	protected void redraw(Graphics g) {
 		if(gameOn) {
-		board.draw(g, getDrawingAreaDimension(),currentTurn);
-		}
-		
+		board.draw(g, getDrawingAreaDimension(),getCurrentTurn());
+		}		
 	}
+	
 	private static void accuse(Player p, Scanner sc) {
 		List<Card> accusable = new ArrayList<>(); 
 		for(Card c : board.getCards()) {
@@ -345,7 +346,7 @@ public class GUI {
 	}
 	
 	public static void Refutation(Player player, Suggestion s) {
-		if(player==currentTurn) {}
+		if(player==getCurrentTurn()) {}
 		if(player.canRefute(s)) {
 			Board.refutee = player;
 		}
@@ -359,6 +360,20 @@ public class GUI {
 	 */
 	public static void main(String[] args) {
 		new GUI();
+	}
+
+
+
+
+	public static Player getCurrentTurn() {
+		return currentTurn;
+	}
+
+
+
+
+	public static void setCurrentTurn(Player currentTurn) {
+		GUI.currentTurn = currentTurn;
 	}
 	
 
