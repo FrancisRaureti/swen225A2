@@ -189,7 +189,7 @@ public class GUI {
 		JMenuItem newGame = new JMenuItem("New Game");
 		newGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				getNumPlayers();
+				selectCharacter();
 				redraw();
 			}
 		});
@@ -293,7 +293,7 @@ public class GUI {
 						int result = JOptionPane.showConfirmDialog(confirm, "Are these the cards you wish to accuse with?");
 						if (result==JOptionPane.YES_OPTION) {
 							if(Board.solution.accusation(Board.getSelectedWeapon(),Board.getSelectedCharacter(), Board.getSelectedRoom())) {
-								getTextOutputArea().setText("Game Over, the winner is " + currentTurn.name.toString());
+								getTextOutputArea().setText("Game Over, the winner is " + currentTurn.customName);
 
 							}else {
 								currentTurn.hasAccused=true;
