@@ -25,7 +25,7 @@ public class SingleSelectButton extends JPanel implements ActionListener {
 	}
 	public CharacterCard.Name selectCharacter() {
 		JPanel panel = new JPanel();
-		//Create the buttons 
+		//Create the buttons
 		JRadioButton MISS_SCARLET = new JRadioButton("Miss Scarlet", true);
 		JRadioButton COL_MUSTARD = new JRadioButton("Col. Mustard", false);
 		JRadioButton MRS_WHITE = new JRadioButton("Mrs White", false);
@@ -43,7 +43,7 @@ public class SingleSelectButton extends JPanel implements ActionListener {
 		bGroup.add(PROF_PLUM);
 
 		String selected = "";
-		
+
 		//Create the JRadioButton
 
 		//Bounds of the buttons
@@ -53,7 +53,7 @@ public class SingleSelectButton extends JPanel implements ActionListener {
 		MR_GREEN.setBounds(75,125,100,30);
 		MRS_PEACOCK.setBounds(75,150,100,30);
 		PROF_PLUM.setBounds(75,175,100,30);
-		
+
 		if(unchosenCharacters.contains("Miss Scarlet")) {
 			panel.add(MISS_SCARLET);
 		}
@@ -61,7 +61,7 @@ public class SingleSelectButton extends JPanel implements ActionListener {
 			panel.add(COL_MUSTARD);
 		}
 		if(unchosenCharacters.contains("Mrs White")) {
-			panel.add(MRS_WHITE);	
+			panel.add(MRS_WHITE);
 		}
 		if(unchosenCharacters.contains("Mr Green")) {
 			panel.add(MR_GREEN);
@@ -70,7 +70,7 @@ public class SingleSelectButton extends JPanel implements ActionListener {
 			panel.add(MRS_PEACOCK);
 		}
 		if(unchosenCharacters.contains("Prof. Plum")) {
-			panel.add(PROF_PLUM);	
+			panel.add(PROF_PLUM);
 		}
 		JOptionPane.showMessageDialog(null, panel, "Select character token", 3);
 		//Add the Listener for each button to respond with
@@ -90,13 +90,13 @@ public class SingleSelectButton extends JPanel implements ActionListener {
 				selected = button.getText();
 			}
 		}
-		
+
 		this.unchosenCharacters.remove(selected);
 		return character(selected);
 
 	}
 	public CharacterCard.Name character(String character){
-		
+
 		switch(character) {
 		case "Miss Scarlet": return CharacterCard.Name.MISS_SCARLET;
 		case "Col Mustard": return CharacterCard.Name.COLONEL_MUSTARD;

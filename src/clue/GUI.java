@@ -3,28 +3,27 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -47,19 +46,20 @@ public class GUI {
 	private static final int DEFAULT_DRAWING_WIDTH = 680;
 	private static final int TEXT_OUTPUT_ROWS = 5;
 	private static boolean gameOn = false;
-	private JComponent drawing; 
-	private JTextArea textOutputArea;
+	private JComponent drawing;
+	private static JTextArea textOutputArea;
+	private JMenuBar theJMenu;
 	static List<Player> players = new ArrayList<>();
 	static Scanner sc = new Scanner(System.in);
 	private static Boolean gameOver = false;
 	private static Player currentTurn;
 	private static Board board;
-	//Initialise an array list with all of the characters in it
-	//private final ArrayList<String> unchosenCharacters = new ArrayList<String>(Arrays.asList("Miss Scarlet","Col. Mustard","Mrs White","Mr Green","Mrs Peacock","Prof. Plum"));
 
 
 	public GUI() {
 		initialise();
+
+
 	}
 
 
@@ -97,9 +97,6 @@ public class GUI {
 		Board.startTurn(getCurrentTurn());
 	}
 
-
-
-
 	public void redraw() {
 		frame.repaint();
 	}
@@ -108,24 +105,31 @@ public class GUI {
 		return drawing.getSize();
 	}
 
-	public JTextArea getTextOutputArea() {
+	public static JTextArea getTextOutputArea() {
 		return textOutputArea;
 	}
 
 	private void initialise() {
-		JButton quit = new JButton("Quit");
-		quit.addActionListener(new ActionListener() {
+
+		JButton Accuse = new JButton("Accuse");
+		Accuse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				System.exit(0); // cleanly end the program.
+				if(!currentTurn.hasAccused) {
+					final JFrame confirm = new JFrame();
+					int result = JOptionPane.showConfirmDialog(confirm, "Are you sure you Want to accuse? this can only be done once");
+					if(result==JOptionPane.OK_OPTION) {
+						Board.accuse(currentTurn);
+						redraw();
+					}
+					else {
+
+					}
+				}else {
+					getTextOutputArea().setText("You have already made an Accusation this game");
+				}
 			}
 		});
-		JButton newgame = new JButton("New Game");
-		newgame.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ev) {
-				selectCharacter();
-				redraw();
-			}
-		});
+
 
 		JButton endTurn = new JButton("End Turn");
 		endTurn.addActionListener(new ActionListener() {
@@ -137,10 +141,14 @@ public class GUI {
 		});
 		JButton Suggest = new JButton("Suggest");
 		Suggest.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ev) {
-				Board.suggest(getCurrentTurn());
-				redraw();
 
+			public void actionPerformed(ActionEvent ev) {
+				if(!currentTurn.hasAccused) {
+					Board.suggest(getCurrentTurn());
+					redraw();
+				}else {
+					getTextOutputArea().setText("You have already made an accusation therefore can no longer make suggestions");
+				}
 			}
 		});
 
@@ -177,6 +185,28 @@ public class GUI {
 		});
 
 
+		JMenu menu = new JMenu("Game");
+		JMenuItem newGame = new JMenuItem("New Game");
+		newGame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				getNumPlayers();
+				redraw();
+			}
+		});
+
+		JMenuItem Quit = new JMenuItem("Quit");
+		Quit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+
+		theJMenu = new JMenuBar();
+
+		menu.add(newGame);
+		menu.add(Quit);
+		theJMenu.add(menu);
+
 
 
 		JPanel panel = new JPanel();
@@ -186,15 +216,7 @@ public class GUI {
 		Border edge = BorderFactory.createEmptyBorder(5, 5, 5, 5);
 		panel.setBorder(edge);
 
-		JPanel newquit = new JPanel();
-		newquit.setLayout(new GridLayout(2, 1));
-		// manually set a fixed size for the panel containing the load and quit
-		// buttons (doesn't change with window resize).
-		newquit.setMaximumSize(new Dimension(50, 100));
-		newquit.add(quit);
-		newquit.add(newgame);
-		panel.add(newquit);
-		panel.add(Box.createRigidArea(new Dimension(15, 0)));
+
 
 		JPanel navigation = new JPanel();
 		navigation.setMaximumSize(new Dimension(150, 60));
@@ -214,6 +236,7 @@ public class GUI {
 		panel.add(Box.createHorizontalGlue());
 		phases.add(endTurn);
 		phases.add(Suggest);
+		phases.add(Accuse);
 		panel.add(phases);
 		panel.add(Box.createRigidArea(new Dimension(5, 0)));
 
@@ -236,8 +259,8 @@ public class GUI {
 				//in the sugestion phase when the player has selected cards
 				if(Board.suggestionPhase) {
 					if(Board.getSelectedWeapon()!=null && Board.getSelectedCharacter()!=null) {
-						final JFrame confirm = new JFrame();	        
-						int result = JOptionPane.showConfirmDialog(confirm, "Would you like to suggest these cards?");			        
+						final JFrame confirm = new JFrame();
+						int result = JOptionPane.showConfirmDialog(confirm, "Would you like to suggest these cards?");
 						if (result==JOptionPane.YES_OPTION) {
 							//submits cards for suggestion and begins the refutation phase
 							Board.submitSuggest(getCurrentTurn());
@@ -255,13 +278,27 @@ public class GUI {
 
 				if(Board.refutationPhase) {
 					if(Board.getSelectedWeapon()!=null || Board.getSelectedCharacter()!=null || Board.getSelectedRoom()!=null) {
-						final JFrame confirm = new JFrame();	        
-						int result = JOptionPane.showConfirmDialog(confirm, "Is this the card you wish to refute with?");			        
+						final JFrame confirm = new JFrame();
+						int result = JOptionPane.showConfirmDialog(confirm, "Is this the card you wish to refute with?");
 						if (result==JOptionPane.YES_OPTION) {
-							//submits cards for suggestion and begins the refutation phase
-							//TODO problem somewhere in this method 
-							Board.submitRefute(getCurrentTurn());							
+							Board.submitRefute(getCurrentTurn());
 							redraw();
+						}
+					}
+				}
+
+				if(Board.AccusationPhase) {
+					if(Board.getSelectedWeapon()!=null && Board.getSelectedCharacter()!=null && Board.getSelectedRoom()!=null) {
+						final JFrame confirm = new JFrame();
+						int result = JOptionPane.showConfirmDialog(confirm, "Are these the cards you wish to accuse with?");
+						if (result==JOptionPane.YES_OPTION) {
+							if(Board.solution.accusation(Board.getSelectedWeapon(),Board.getSelectedCharacter(), Board.getSelectedRoom())) {
+								getTextOutputArea().setText("Game Over, the winner is " + currentTurn.name.toString());
+
+							}else {
+								currentTurn.hasAccused=true;
+								getTextOutputArea().setText("Incorrect guess");
+							}
 						}
 					}
 				}
@@ -301,19 +338,21 @@ public class GUI {
 		frame.setLayout(new BorderLayout());
 		frame.add(panel, BorderLayout.NORTH);
 		frame.add(split, BorderLayout.CENTER);
-
+		frame.setJMenuBar(theJMenu);
 		// always do these two things last, in this order.
 		frame.pack();
 		frame.setVisible(true);
+
 	}
 
 	protected void redraw(Graphics g) {
 		if(gameOn) {
-			board.draw(g, getDrawingAreaDimension(),getCurrentTurn());
-		}		
+		board.draw(g, getDrawingAreaDimension(),getCurrentTurn());
+		}
 	}
+
 	private static void accuse(Player p, Scanner sc) {
-		List<Card> accusable = new ArrayList<>(); 
+		List<Card> accusable = new ArrayList<>();
 		for(Card c : board.getCards()) {
 			if(!p.hand.contains(c) && !p.refuted.contains(c)) {
 				accusable.add(c);
@@ -345,7 +384,6 @@ public class GUI {
 			gameOver=true;
 		}
 	}
-
 
 	/**
 	 * returns next player in line for turn
