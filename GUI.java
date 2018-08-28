@@ -103,6 +103,24 @@ public class GUI {
 	
 	private void initialise() {
 
+		JButton Accuse = new JButton("Accuse");
+		Accuse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				if(!currentTurn.hasAccused) {
+					final JFrame confirm = new JFrame();	        
+					int result = JOptionPane.showConfirmDialog(confirm, "Are you sure you Want to accuse? this can only be done once");
+					if(result==JOptionPane.OK_OPTION) {
+						Board.accuse();
+					}
+					else {
+
+					}
+				}else {
+					getTextOutputArea().setText("You have already made an Accusation this game");
+				}
+			}
+		});
+		
 		
 		JButton endTurn = new JButton("End Turn");
 		endTurn.addActionListener(new ActionListener() {
@@ -114,10 +132,14 @@ public class GUI {
 		});
 		JButton Suggest = new JButton("Suggest");
 		Suggest.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent ev) {
-				Board.suggest(getCurrentTurn());
-				redraw();
-
+				if(!currentTurn.hasAccused) {
+					Board.suggest(getCurrentTurn());
+					redraw();
+				}else {
+					getTextOutputArea().setText("You have already made an accusation therefore can no longer make suggestions");
+				}
 			}
 		});
 		
@@ -205,6 +227,7 @@ public class GUI {
 		panel.add(Box.createHorizontalGlue());
 		phases.add(endTurn);
 		phases.add(Suggest);
+		phases.add(Accuse);
 		panel.add(phases);
 		panel.add(Box.createRigidArea(new Dimension(5, 0)));
 		
@@ -249,10 +272,23 @@ public class GUI {
 						final JFrame confirm = new JFrame();	        
 						int result = JOptionPane.showConfirmDialog(confirm, "Is this the card you wish to refute with?");			        
 						if (result==JOptionPane.YES_OPTION) {
-							//submits cards for suggestion and begins the refutation phase
-							//TODO problem somewhere in this method 
 							Board.submitRefute(getCurrentTurn());							
 							redraw();
+						}
+					}
+				}
+				
+				if(Board.AccusationPhase) {
+					if(Board.getSelectedWeapon()!=null && Board.getSelectedCharacter()!=null && Board.getSelectedRoom()!=null) {
+						final JFrame confirm = new JFrame();	        
+						int result = JOptionPane.showConfirmDialog(confirm, "Are these the cards you wish to accuse with?");
+						if (result==JOptionPane.YES_OPTION) {
+							if(Board.solution.accusation(Board.getSelectedWeapon(),Board.getSelectedCharacter(), Board.getSelectedRoom())) {
+								getTextOutputArea().setText("Game Over, the winner is " + currentTurn.toString());
+								initialise();
+							}else {
+								currentTurn.hasAccused=true;
+							}
 						}
 					}
 				}
