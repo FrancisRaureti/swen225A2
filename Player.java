@@ -8,24 +8,26 @@ import java.util.List;
 
 
 public class Player {
-	
+
 	CharacterCard.Name name;
+	String customName;
 	Boolean inRoom;
 	Boolean hasAccused;
 	public List<Card> visitedRooms;
 	public List<Card> hand;
 	public List<Card> suggestable;
 	public List<Card> refuted;
-	public int xpos; 
+	public int xpos;
 	public int ypos;
 	public int moves;
-	
+
 	/**
-	 * this method constructs player and sets player position according to their 
+	 * this method constructs player and sets player position according to their
 	 * name
 	 * @param name
 	 */
-	public Player(CharacterCard.Name name) {
+	public Player(CharacterCard.Name name, String customName) {
+		this.customName = customName;
 		this.name=name;
 		this.inRoom=false;
 		this.hasAccused=false;
@@ -39,12 +41,12 @@ public class Player {
 		if(name==CharacterCard.Name.MR_GREEN) {xpos = 14; ypos = 0;}
 		if(name==CharacterCard.Name.MRS_PEACOCK){xpos = 23; ypos = 6;}
 		if(name==CharacterCard.Name.PROFESSOR_PLUM){xpos = 23; ypos = 19;}
-		
+
 	}
-	
+
 	/**
 	 * this method returns the character piece symbol for drawing their position on the board
-	 * @return 
+	 * @return
 	 */
 	public String peice() {
 		String s =  "";
@@ -56,7 +58,7 @@ public class Player {
 		if(name==CharacterCard.Name.PROFESSOR_PLUM) {s= "P";}
 		return s;
 	}
-	
+
 	public void draw(Graphics g, Dimension area ) {
 		Color playercolour = Color.BLACK;
 		if(name==CharacterCard.Name.MISS_SCARLET) {playercolour= new Color(230,20,40); }
@@ -68,15 +70,15 @@ public class Player {
 		g.setColor(playercolour);
 		g.fillOval(xpos*Tile.size, ypos*Tile.size, Tile.size, Tile.size);
 	}
-	
+
 	public void setMoves(int moves) {
 		this.moves = moves;
 	}
-	
+
 	public int getMoves() {
 		return this.moves;
 	}
-	
+
 	/**
 	 * moves player via direction
 	 * @param d
@@ -99,7 +101,7 @@ public class Player {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * returns card that can be used for refutation if it matches given string
 	 * @param s
@@ -112,9 +114,9 @@ public class Player {
 				refute = c;
 			}
 		}
-		
+
 		return refute;
-		
+
 	}
 
 }
