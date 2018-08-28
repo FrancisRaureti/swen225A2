@@ -416,6 +416,7 @@ public class Board {
 	 * @param p
 	 */	
 	public static void startTurn(Player p) {
+		GUI.getTextOutputArea().setText(p.customName+"'s turn");
 		suggestionPhase=false;
 		refutationPhase=false;
 		AccusationPhase=false;
@@ -610,7 +611,10 @@ public class Board {
 		suggestionPhase=false;
 		refutationPhase = true;
 		suggestion = new Suggestion((RoomCard)Board.roomFromPos(currentTurn.xpos,currentTurn.ypos),selectedCharacter,selectedWeapon);
+		GUI.getTextOutputArea().setText(currentTurn.customName + " has suggested that "+selectedCharacter.getName()+" has done the"
+				+ "murder in the " + Board.roomFromPos(currentTurn.xpos,currentTurn.ypos).name + " with the " + selectedWeapon.getName());
 		refutee = nextRefutee(currentTurn);
+		GUI.getTextOutputArea().setText(refutee.customName + " can refute this suggestion");
 		setSelectedWeapon(null);
 		setSelectedCharacter(null);
 	}
@@ -630,9 +634,12 @@ public class Board {
 		selectedRoom = null;
 		selectedCharacter = null;
 		refutee = nextRefutee(refutee);
+		
 		if (refutee==currentTurn) {
 			GUI.setCurrentTurn(GUI.nextPlayer(currentTurn));
 			startTurn(GUI.nextPlayer(currentTurn));
+		}else {
+			GUI.getTextOutputArea().setText(refutee.customName + " can refute this suggestion");
 		}		
 	}
 	

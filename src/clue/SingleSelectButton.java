@@ -99,11 +99,11 @@ public class SingleSelectButton extends JPanel implements ActionListener {
 
 		switch(character) {
 		case "Miss Scarlet": return CharacterCard.Name.MISS_SCARLET;
-		case "Col Mustard": return CharacterCard.Name.COLONEL_MUSTARD;
+		case "Col. Mustard": return CharacterCard.Name.COLONEL_MUSTARD;
 		case "Mrs White": return CharacterCard.Name.MRS_WHITE;
 		case "Mr Green": return CharacterCard.Name.MR_GREEN;
 		case "Mrs Peacock" : return CharacterCard.Name.MRS_PEACOCK;
-		case"Prof Plum":return CharacterCard.Name.PROFESSOR_PLUM;
+		case"Prof. Plum":return CharacterCard.Name.PROFESSOR_PLUM;
 		default:return CharacterCard.Name.MISS_SCARLET;
 		}
 	}
