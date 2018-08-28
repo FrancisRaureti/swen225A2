@@ -651,7 +651,14 @@ public class Board {
 		
 	}
 	
-	public static void accuse() {
+	public static void accuse(Player currentTurn) {
+		List<Card> suggestable = new ArrayList<>(); 
+		for(Card c : cards) {
+			if(!currentTurn.hand.contains(c) && !currentTurn.refuted.contains(c)) {
+				suggestable.add(c);
+			}
+		}
+		currentTurn.suggestable = suggestable;
 		AccusationPhase=true;
 		selectedWeapon = null;
 		selectedRoom = null;

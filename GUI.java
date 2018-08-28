@@ -110,7 +110,8 @@ public class GUI {
 					final JFrame confirm = new JFrame();	        
 					int result = JOptionPane.showConfirmDialog(confirm, "Are you sure you Want to accuse? this can only be done once");
 					if(result==JOptionPane.OK_OPTION) {
-						Board.accuse();
+						Board.accuse(currentTurn);
+						redraw();
 					}
 					else {
 
