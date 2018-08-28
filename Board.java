@@ -25,7 +25,7 @@ public class Board {
 	private static List<Card> weapons;
 	private static List<Card> roomCards;
 	private static List<Card> characterCards;
-	private static Solution solution;
+	public static Solution solution;
 	public static Suggestion suggestion;
 	private static WeaponCard selectedWeapon;
 	private static CharacterCard selectedCharacter;
@@ -33,6 +33,8 @@ public class Board {
 	
 	static boolean suggestionPhase;
 	static boolean refutationPhase;
+	static boolean AccusationPhase;
+	
 	public static Player refutee;
 	
 	public void draw(Graphics g, Dimension screen,Player currentTurn) {		
@@ -114,6 +116,26 @@ public class Board {
 						c.draw(g2, screen, xpos + rcount*80, ypos);
 						rcount++;
 					}
+				}
+			}
+		}
+		if(AccusationPhase) {
+			for (Card c : currentTurn.suggestable) {
+				if(c instanceof WeaponCard) {
+					ypos=50;
+					g2.setColor(weaponcolor);
+					c.draw(g2, screen, xpos + wcount*80, ypos);
+					wcount++;
+				}else if(c instanceof CharacterCard) {
+					ypos=180; 
+					g2.setColor(Charactercolor);
+					c.draw(g2, screen, xpos + ccount*80, ypos);
+					ccount++;
+				}else if(c instanceof RoomCard) {
+					ypos = 310;
+					g2.setColor(roomcolor);
+					c.draw(g2, screen, xpos + rcount*80, ypos);
+					rcount++;
 				}
 			}
 		}
@@ -396,6 +418,7 @@ public class Board {
 	public static void startTurn(Player p) {
 		suggestionPhase=false;
 		refutationPhase=false;
+		AccusationPhase=false;
 		refutee = null;
 		p.moves=dice.roll();
 		for(Card c : cards) {
@@ -502,19 +525,35 @@ public class Board {
 						if(c.xpos-c.size/2<e.getX() && c.xpos+c.size/2>e.getX() 
 								&& c.ypos-c.size/2<e.getY() && c.ypos+c.size*(3/2)>e.getY()) {
 							if(c instanceof WeaponCard) {
-								setSelectedWeapon((WeaponCard) c);							}
+								setSelectedWeapon((WeaponCard) c);							
+								}
 							else if(c instanceof CharacterCard) {
 								setSelectedCharacter((CharacterCard)c);
-							}else if(c instanceof RoomCard) {
+								}
+							else if(c instanceof RoomCard) {
 								setSelectedRoom((RoomCard)c);
 								}
-							}
+						}
 					}
 				}
 			}
+		}else if(AccusationPhase) {
+			for(Card c : currentTurn.suggestable) {
+				if(c.xpos-c.size/2<e.getX() && c.xpos+c.size/2>e.getX() 
+						&& c.ypos-c.size/2<e.getY() && c.ypos+c.size*(3/2)>e.getY()) {
+					if(c instanceof WeaponCard) {
+						setSelectedWeapon((WeaponCard) c);
+					}
+					else if(c instanceof CharacterCard) {
+						setSelectedCharacter((CharacterCard)c);
+					}else if(c instanceof RoomCard) {
+						setSelectedRoom((RoomCard)c);
+					}
+				}
+
+			}
 		}
-		
-		
+
 	}
 
 
@@ -594,12 +633,9 @@ public class Board {
 		if (refutee==currentTurn) {
 			GUI.setCurrentTurn(GUI.nextPlayer(currentTurn));
 			startTurn(GUI.nextPlayer(currentTurn));
-		}
-		
-		
-		
-		
+		}		
 	}
+	
 	//Problem here this method of selecting next refutee is defective
 	public static Player nextRefutee(Player player) {
 		Player temp = GUI.nextPlayer(player);
@@ -615,7 +651,13 @@ public class Board {
 		
 	}
 	
-
+	public static void accuse() {
+		AccusationPhase=true;
+		selectedWeapon = null;
+		selectedRoom = null;
+		selectedCharacter = null;
+	}
 	
+
 
 }
