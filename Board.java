@@ -205,7 +205,7 @@ public class Board {
 		deck.remove(roomCards.get(random));
 		
 		this.setSolution(new Solution(murderWeapon,murderer,murderRoom));
-		
+		GUI.getTextOutputArea().setText(murderWeapon + " " + murderer + " " + murderRoom);
 		System.out.println(random);
 		while(!deck.isEmpty()) {
 			for(Player p : players) {

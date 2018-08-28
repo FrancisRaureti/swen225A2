@@ -47,7 +47,7 @@ public class GUI {
 	private static final int TEXT_OUTPUT_ROWS = 5;
 	private static boolean gameOn = false;
 	private JComponent drawing; 
-	private JTextArea textOutputArea;
+	private static JTextArea textOutputArea;
 	private JMenuBar theJMenu;
 	static List<Player> players = new ArrayList<>();
 	static Scanner sc = new Scanner(System.in);
@@ -97,7 +97,7 @@ public class GUI {
 		return drawing.getSize();
 	}
 	
-	public JTextArea getTextOutputArea() {
+	public static JTextArea getTextOutputArea() {
 		return textOutputArea;
 	}
 	
@@ -285,10 +285,11 @@ public class GUI {
 						int result = JOptionPane.showConfirmDialog(confirm, "Are these the cards you wish to accuse with?");
 						if (result==JOptionPane.YES_OPTION) {
 							if(Board.solution.accusation(Board.getSelectedWeapon(),Board.getSelectedCharacter(), Board.getSelectedRoom())) {
-								getTextOutputArea().setText("Game Over, the winner is " + currentTurn.toString());
-								initialise();
+								getTextOutputArea().setText("Game Over, the winner is " + currentTurn.name.toString());
+								
 							}else {
 								currentTurn.hasAccused=true;
+								getTextOutputArea().setText("Incorrect guess");
 							}
 						}
 					}
