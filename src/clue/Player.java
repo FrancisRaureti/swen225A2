@@ -10,6 +10,7 @@ import java.util.List;
 public class Player {
 	
 	CharacterCard.Name name;
+	String customName;
 	Boolean inRoom;
 	Boolean hasAccused;
 	public List<Card> visitedRooms;
@@ -25,7 +26,8 @@ public class Player {
 	 * name
 	 * @param name
 	 */
-	public Player(CharacterCard.Name name) {
+	public Player(CharacterCard.Name name, String customName) {
+		this.customName = customName;
 		this.name=name;
 		this.inRoom=false;
 		this.hasAccused=false;

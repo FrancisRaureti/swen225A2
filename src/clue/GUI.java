@@ -59,10 +59,7 @@ public class GUI {
 
 
 	public GUI() {
-
 		initialise();
-
-
 	}
 
 
@@ -81,16 +78,17 @@ public class GUI {
 		}
 		return numPlayers;
 	}
-	
-	
+
+
 	public void selectCharacter() {
 		int numPlayers = getNumPlayers();
 		SingleSelectButton radioButton = new SingleSelectButton();
 		for(int i = 0; i<numPlayers;i++) {
+			String customName = JOptionPane.showInputDialog("Please Choose a name for your Character");
 			CharacterCard.Name character = radioButton.selectCharacter();
-			players.add(new Player(character));
+			players.add(new Player(character,customName));
 		}
-		System.out.print("Size of players list is : " + players.size());
+
 		this.currentTurn = players.get(0);
 		this.gameOn = true;
 		redraw();
