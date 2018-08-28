@@ -55,7 +55,7 @@ public class GUI {
 	private static Player currentTurn;
 	private static Board board;
 	//Initialise an array list with all of the characters in it
-	private final ArrayList<String> unchosenCharacters = new ArrayList<String>(Arrays.asList("Miss Scarlet","Col. Mustard","Mrs White","Mr Green","Mrs Peacock","Prof. Plum"));
+	//private final ArrayList<String> unchosenCharacters = new ArrayList<String>(Arrays.asList("Miss Scarlet","Col. Mustard","Mrs White","Mr Green","Mrs Peacock","Prof. Plum"));
 
 
 	public GUI() {
@@ -85,21 +85,13 @@ public class GUI {
 	
 	public void selectCharacter() {
 		int numPlayers = getNumPlayers();
-
-		for(int i = 0; i<numPlayers;i++) {
-		JFrame radioFrame = new JFrame("Character Select");
-		radioFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
 		SingleSelectButton radioButton = new SingleSelectButton();
-		radioButton.setOpaque(true);
-		
-		String character = radioButton.selectCharacter(this.unchosenCharacters);
-		radioFrame.pack();
-		radioFrame.setVisible(true);
+		for(int i = 0; i<numPlayers;i++) {
+			CharacterCard.Name character = radioButton.selectCharacter();
+			players.add(new Player(character));
 		}
-
-		//								Player player = new Player(CharacterCard.Name.values()[i]);
-		//								players.add(player);
+		System.out.print("Size of players list is : " + players.size());
+		this.currentTurn = players.get(0);
 		this.gameOn = true;
 		redraw();
 		board = new Board(players);
