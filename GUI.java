@@ -3,6 +3,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -18,6 +19,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -44,6 +48,7 @@ public class GUI {
 	private static boolean gameOn = false;
 	private JComponent drawing; 
 	private JTextArea textOutputArea;
+	private JMenuBar theJMenu;
 	static List<Player> players = new ArrayList<>();
 	static Scanner sc = new Scanner(System.in);
 	private static Boolean gameOver = false;
@@ -97,19 +102,7 @@ public class GUI {
 	}
 	
 	private void initialise() {
-		JButton quit = new JButton("Quit");
-		quit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ev) {
-				System.exit(0); // cleanly end the program.
-			}
-		});
-		JButton newgame = new JButton("New Game");
-		newgame.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ev) {
-				getNumPlayers();
-				redraw();
-			}
-		});
+
 		
 		JButton endTurn = new JButton("End Turn");
 		endTurn.addActionListener(new ActionListener() {
@@ -159,7 +152,29 @@ public class GUI {
 				redraw();
 			}
 		});
-
+		
+		
+		JMenu menu = new JMenu("Game");
+		JMenuItem newGame = new JMenuItem("New Game");
+		newGame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				getNumPlayers();
+				redraw();
+			}
+		});
+		
+		JMenuItem Quit = new JMenuItem("Quit");
+		Quit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0); 				
+			}
+		});
+		
+		theJMenu = new JMenuBar();
+		
+		menu.add(newGame);
+		menu.add(Quit);
+		theJMenu.add(menu);
 		
 		
 		
@@ -170,15 +185,7 @@ public class GUI {
 		Border edge = BorderFactory.createEmptyBorder(5, 5, 5, 5);
 		panel.setBorder(edge);
 		
-		JPanel newquit = new JPanel();
-		newquit.setLayout(new GridLayout(2, 1));
-		// manually set a fixed size for the panel containing the load and quit
-		// buttons (doesn't change with window resize).
-		newquit.setMaximumSize(new Dimension(50, 100));
-		newquit.add(quit);
-		newquit.add(newgame);
-		panel.add(newquit);
-		panel.add(Box.createRigidArea(new Dimension(15, 0)));
+
 	
 		JPanel navigation = new JPanel();
 		navigation.setMaximumSize(new Dimension(150, 60));
@@ -285,10 +292,11 @@ public class GUI {
 		frame.setLayout(new BorderLayout());
 		frame.add(panel, BorderLayout.NORTH);
 		frame.add(split, BorderLayout.CENTER);
-
+		frame.setJMenuBar(theJMenu);
 		// always do these two things last, in this order.
 		frame.pack();
 		frame.setVisible(true);
+		
 	}
 
 	protected void redraw(Graphics g) {
