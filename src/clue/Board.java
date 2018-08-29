@@ -11,7 +11,11 @@ import java.util.List;
 import java.util.Scanner;
 
 
-
+/**
+ * 
+ * @author FrancisRaureti
+ *this class holds all the information of the board and also contains methods to draw all of it
+ */
 public class Board {
 	
 	private static final Color weaponcolor = new Color(200,255,255); 
@@ -37,6 +41,13 @@ public class Board {
 	
 	public static Player refutee;
 	
+	
+	/**
+	 * Drawing method behaves differently depending on the phase
+	 * @param g
+	 * @param screen
+	 * @param currentTurn
+	 */
 	public void draw(Graphics g, Dimension screen,Player currentTurn) {		
 		Graphics2D g2 = (Graphics2D) g;
 		
@@ -116,6 +127,13 @@ public class Board {
 						c.draw(g2, screen, xpos + rcount*80, ypos);
 						rcount++;
 					}
+					
+					if(c==getSelectedWeapon() || c==getSelectedCharacter() || c==getSelectedRoom()) {
+						Stroke oldstroke = g2.getStroke();
+						g2.setStroke(new BasicStroke(2));					
+						c.drawOutline(g2, screen);
+						g2.setStroke(oldstroke);
+					}
 				}
 			}
 		}
@@ -136,6 +154,12 @@ public class Board {
 					g2.setColor(roomcolor);
 					c.draw(g2, screen, xpos + rcount*80, ypos);
 					rcount++;
+				}
+				if(c==getSelectedWeapon() || c==getSelectedCharacter() || c==getSelectedRoom()) {
+					Stroke oldstroke = g2.getStroke();
+					g2.setStroke(new BasicStroke(2));					
+					c.drawOutline(g2, screen);
+					g2.setStroke(oldstroke);
 				}
 			}
 		}
@@ -206,7 +230,6 @@ public class Board {
 		
 		this.setSolution(new Solution(murderWeapon,murderer,murderRoom));
 		GUI.getTextOutputArea().setText(murderWeapon + " " + murderer + " " + murderRoom);
-		System.out.println(random);
 		while(!deck.isEmpty()) {
 			for(Player p : players) {
 				random = (int)(Math.random()*deck.size());
@@ -263,19 +286,19 @@ public class Board {
 	 * @return 
 	 */
 	public static boolean move(Player p, Tile.Direction d) {		
-		if(p.moves>0) {
+		if(p.moves>0 && !suggestionPhase && !AccusationPhase && !refutationPhase) {
 		int prevX = p.xpos;
 		int prevY = p.ypos;
 		Tile adj = adjTile(getTiles()[p.ypos][p.xpos],d);
 		if(getTiles()[p.ypos][p.xpos].walls.contains(d)) {
-			System.out.println("there is a wall that you cannot move through");
+			GUI.getTextOutputArea().setText("there is a wall that you cannot move through");
 		}else {
 			if(adj!=null && !checkTile(adj)) {
 				p.movePlayer(d);
 				getTiles()[p.ypos][p.xpos].setHasPlayer(true);
 				getTiles()[prevY][prevX].setHasPlayer(false);
 			}else {
-				System.out.println("you cannot move through other players");
+				GUI.getTextOutputArea().setText("you cannot move through other players");
 			}
 			if(getTiles()[p.ypos][p.xpos].isRoom() && !p.visitedRooms.contains(roomFromPos(p.xpos,p.ypos))) {
 				return true;
@@ -319,7 +342,7 @@ public class Board {
 			}
 		}
 		if(y>=getTiles().length || x>=getTiles()[0].length || x<0 || y<0) {
-			System.out.println("you can't move off the board");
+			GUI.getTextOutputArea().setText("you can't move off the board");
 			return null;
 		}
 		
@@ -611,10 +634,10 @@ public class Board {
 		suggestionPhase=false;
 		refutationPhase = true;
 		suggestion = new Suggestion((RoomCard)Board.roomFromPos(currentTurn.xpos,currentTurn.ypos),selectedCharacter,selectedWeapon);
-		GUI.getTextOutputArea().setText(currentTurn.customName + " has suggested that "+selectedCharacter.getName()+" has done the"
-				+ "murder in the " + Board.roomFromPos(currentTurn.xpos,currentTurn.ypos).name + " with the " + selectedWeapon.getName());
 		refutee = nextRefutee(currentTurn);
-		GUI.getTextOutputArea().setText(refutee.customName + " can refute this suggestion");
+		GUI.getTextOutputArea().setText(currentTurn.customName + " has suggested that "+suggestion.character.toString() +" has done the"
+				+ " murder in the " + suggestion.room.getName() + " with the " + suggestion.Weapon.toString() +"\n"
+				+ refutee.customName + " can refute this suggestion");
 		setSelectedWeapon(null);
 		setSelectedCharacter(null);
 	}
@@ -639,7 +662,9 @@ public class Board {
 			GUI.setCurrentTurn(GUI.nextPlayer(currentTurn));
 			startTurn(GUI.nextPlayer(currentTurn));
 		}else {
-			GUI.getTextOutputArea().setText(refutee.customName + " can refute this suggestion");
+			GUI.getTextOutputArea().setText(currentTurn.customName + " has suggested that "+suggestion.character.toString() +" has done the"
+					+ " murder in the " + suggestion.room.getName() + " with the " + suggestion.Weapon.toString() +"\n"
+					+ refutee.customName + " can refute this suggestion");
 		}		
 	}
 	
