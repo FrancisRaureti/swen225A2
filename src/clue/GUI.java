@@ -86,7 +86,21 @@ public class GUI {
 		for(int i = 0; i<numPlayers;i++) {
 			String customName = JOptionPane.showInputDialog("Please Choose a name for your Character");
 			CharacterCard.Name character = radioButton.selectCharacter();
+			if(players.isEmpty()) {
 			players.add(new Player(character,customName));
+			}else {
+				boolean added = false;
+				for(int o = 0; o<players.size();o++) {
+					if(players.get(o).name.ordinal()>character.ordinal()) {
+						players.add(o,new Player(character,customName));
+						added = true;
+						break;
+					}
+				}
+				if(!added) {
+					players.add(new Player(character,customName));
+				}
+			}
 		}
 
 		this.currentTurn = players.get(0);
